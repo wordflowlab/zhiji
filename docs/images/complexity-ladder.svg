@@ -1,0 +1,156 @@
+<svg viewBox="0 0 900 700" xmlns="http://www.w3.org/2000/svg">
+  <text x="450" y="30" font-size="18" font-weight="bold" text-anchor="middle">复杂度递进阶梯（Complexity Ladder）</text>
+  <text x="450" y="55" font-size="12" text-anchor="middle" fill="#666">从简单开始，只在必要时增加复杂性</text>
+  
+  <!-- 阶梯结构 -->
+  <g transform="translate(100, 100)">
+    
+    <!-- 第一层：单次 LLM 调用 -->
+    <rect x="0" y="400" width="700" height="100" fill="#E8F5E9" stroke="#4CAF50" stroke-width="2"/>
+    <text x="20" y="430" font-size="14" font-weight="bold">第一层：单次 LLM 调用</text>
+    <text x="20" y="450" font-size="11">最简单的解决方案，一次调用完成任务</text>
+    
+    <text x="20" y="475" font-size="10" font-weight="bold">特点：</text>
+    <text x="120" y="475" font-size="10">延迟最低 (1-3秒)</text>
+    <text x="250" y="475" font-size="10">成本最低 ($0.001-0.01)</text>
+    <text x="400" y="475" font-size="10">易于调试</text>
+    
+    <text x="20" y="495" font-size="10" font-weight="bold">适用：</text>
+    <text x="120" y="495" font-size="10">简单问答、分类、摘要、翻译</text>
+    
+    <!-- 第二层：增强型 LLM -->
+    <rect x="100" y="280" width="600" height="100" fill="#E3F2FD" stroke="#2196F3" stroke-width="2"/>
+    <text x="120" y="310" font-size="14" font-weight="bold">第二层：增强型 LLM</text>
+    <text x="120" y="330" font-size="11">添加检索、工具、记忆等增强能力</text>
+    
+    <text x="120" y="355" font-size="10" font-weight="bold">增强组件：</text>
+    <rect x="220" y="340" width="60" height="25" fill="#BBDEFB" stroke="#1976D2" rx="5"/>
+    <text x="250" y="356" font-size="9" text-anchor="middle">检索</text>
+    
+    <rect x="290" y="340" width="60" height="25" fill="#BBDEFB" stroke="#1976D2" rx="5"/>
+    <text x="320" y="356" font-size="9" text-anchor="middle">工具</text>
+    
+    <rect x="360" y="340" width="60" height="25" fill="#BBDEFB" stroke="#1976D2" rx="5"/>
+    <text x="390" y="356" font-size="9" text-anchor="middle">记忆</text>
+    
+    <text x="450" y="355" font-size="10">延迟: 2-5秒</text>
+    <text x="550" y="355" font-size="10">成本: +20-50%</text>
+    
+    <text x="120" y="375" font-size="10" font-weight="bold">适用：</text>
+    <text x="220" y="375" font-size="10">RAG 问答、函数调用、上下文对话</text>
+    
+    <!-- 第三层：工作流 -->
+    <rect x="200" y="160" width="500" height="100" fill="#FFF3E0" stroke="#FF9800" stroke-width="2"/>
+    <text x="220" y="190" font-size="14" font-weight="bold">第三层：工作流（Workflows）</text>
+    <text x="220" y="210" font-size="11">预定义的多步骤编排，确定性路径</text>
+    
+    <text x="220" y="235" font-size="10" font-weight="bold">模式：</text>
+    <text x="280" y="235" font-size="10">链式 | 路由 | 并行 | 协调者</text>
+    <text x="450" y="235" font-size="10">延迟: 5-20秒</text>
+    <text x="550" y="235" font-size="10">成本: 2-10x</text>
+    
+    <text x="220" y="255" font-size="10" font-weight="bold">适用：</text>
+    <text x="320" y="255" font-size="10">多步骤任务、质量要求高、需要验证</text>
+    
+    <!-- 第四层：智能体 -->
+    <rect x="300" y="40" width="400" height="100" fill="#FFEBEE" stroke="#F44336" stroke-width="2"/>
+    <text x="320" y="70" font-size="14" font-weight="bold">第四层：智能体（Agents）</text>
+    <text x="320" y="90" font-size="11">自主决策，动态规划，自我纠错</text>
+    
+    <text x="320" y="115" font-size="10" font-weight="bold">能力：</text>
+    <text x="380" y="115" font-size="10">自主规划 | 工具选择 | 错误恢复</text>
+    <text x="320" y="135" font-size="10">延迟: 30秒-5分钟 | 成本: 10-100x | 适用: 开放式复杂任务</text>
+    
+    <!-- 箭头和决策点 -->
+    <path d="M 350 400 L 400 280" stroke="#666" stroke-width="2" marker-end="url(#arrowUp)" stroke-dasharray="5,5"/>
+    <path d="M 400 280 L 450 160" stroke="#666" stroke-width="2" marker-end="url(#arrowUp)" stroke-dasharray="5,5"/>
+    <path d="M 450 160 L 500 40" stroke="#666" stroke-width="2" marker-end="url(#arrowUp)" stroke-dasharray="5,5"/>
+    
+    <!-- 决策标注 -->
+    <text x="380" y="340" font-size="9" fill="#F44336" font-weight="bold">需要外部信息？</text>
+    <text x="430" y="220" font-size="9" fill="#F44336" font-weight="bold">单次调用不够？</text>
+    <text x="480" y="100" font-size="9" fill="#F44336" font-weight="bold">需要自主决策？</text>
+  </g>
+  
+  <!-- 右侧：权衡考虑 -->
+  <g transform="translate(50, 100)">
+    <rect x="720" y="40" width="120" height="460" fill="#F5F5F5" stroke="#999" stroke-width="1" rx="10"/>
+    <text x="780" y="65" font-size="12" font-weight="bold" text-anchor="middle">权衡因素</text>
+    
+    <!-- 延迟 -->
+    <g transform="translate(730, 85)">
+      <text x="0" y="0" font-size="11" font-weight="bold">延迟</text>
+      <rect x="0" y="10" width="100" height="8" fill="#E0E0E0"/>
+      <rect x="0" y="10" width="20" height="8" fill="#4CAF50"/>
+      <text x="0" y="30" font-size="9">L1: 1-3s</text>
+      
+      <rect x="0" y="35" width="100" height="8" fill="#E0E0E0"/>
+      <rect x="0" y="35" width="35" height="8" fill="#2196F3"/>
+      <text x="0" y="55" font-size="9">L2: 2-5s</text>
+      
+      <rect x="0" y="60" width="100" height="8" fill="#E0E0E0"/>
+      <rect x="0" y="60" width="60" height="8" fill="#FF9800"/>
+      <text x="0" y="80" font-size="9">L3: 5-20s</text>
+      
+      <rect x="0" y="85" width="100" height="8" fill="#E0E0E0"/>
+      <rect x="0" y="85" width="90" height="8" fill="#F44336"/>
+      <text x="0" y="105" font-size="9">L4: 30s-5m</text>
+    </g>
+    
+    <!-- 成本 -->
+    <g transform="translate(730, 210)">
+      <text x="0" y="0" font-size="11" font-weight="bold">成本</text>
+      <rect x="0" y="10" width="100" height="8" fill="#E0E0E0"/>
+      <rect x="0" y="10" width="10" height="8" fill="#4CAF50"/>
+      <text x="0" y="30" font-size="9">L1: $0.001</text>
+      
+      <rect x="0" y="35" width="100" height="8" fill="#E0E0E0"/>
+      <rect x="0" y="35" width="20" height="8" fill="#2196F3"/>
+      <text x="0" y="55" font-size="9">L2: +50%</text>
+      
+      <rect x="0" y="60" width="100" height="8" fill="#E0E0E0"/>
+      <rect x="0" y="60" width="50" height="8" fill="#FF9800"/>
+      <text x="0" y="80" font-size="9">L3: 2-10x</text>
+      
+      <rect x="0" y="85" width="100" height="8" fill="#E0E0E0"/>
+      <rect x="0" y="85" width="100" height="8" fill="#F44336"/>
+      <text x="0" y="105" font-size="9">L4: 10-100x</text>
+    </g>
+    
+    <!-- 可控性 -->
+    <g transform="translate(730, 335)">
+      <text x="0" y="0" font-size="11" font-weight="bold">可控性</text>
+      <rect x="0" y="10" width="100" height="8" fill="#E0E0E0"/>
+      <rect x="0" y="10" width="100" height="8" fill="#4CAF50"/>
+      <text x="0" y="30" font-size="9">L1: 完全可控</text>
+      
+      <rect x="0" y="35" width="100" height="8" fill="#E0E0E0"/>
+      <rect x="0" y="35" width="85" height="8" fill="#2196F3"/>
+      <text x="0" y="55" font-size="9">L2: 高度可控</text>
+      
+      <rect x="0" y="60" width="100" height="8" fill="#E0E0E0"/>
+      <rect x="0" y="60" width="60" height="8" fill="#FF9800"/>
+      <text x="0" y="80" font-size="9">L3: 路径固定</text>
+      
+      <rect x="0" y="85" width="100" height="8" fill="#E0E0E0"/>
+      <rect x="0" y="85" width="30" height="8" fill="#F44336"/>
+      <text x="0" y="105" font-size="9">L4: 自主决策</text>
+    </g>
+  </g>
+  
+  <!-- 底部：决策原则 -->
+  <g transform="translate(100, 620)">
+    <rect x="0" y="0" width="700" height="60" fill="#E1F5FE" stroke="#03A9F4" stroke-width="2" rx="10"/>
+    <text x="350" y="25" font-size="13" font-weight="bold" text-anchor="middle">🎯 核心原则：从简单开始，逐步增加复杂性</text>
+    <text x="350" y="45" font-size="11" text-anchor="middle">
+      先尝试层级 1 → 不够用？试试层级 2 → 还不够？考虑层级 3 → 真的需要？才用层级 4
+    </text>
+  </g>
+  
+  <!-- 箭头定义 -->
+  <defs>
+    <marker id="arrowUp" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#666"/>
+    </marker>
+  </defs>
+</svg>

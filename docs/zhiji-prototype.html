@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>知几 - AI Agent 可行性评估平台</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Alpine.js CDN -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <!-- Custom Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: "hsl(214.3 31.8% 91.4%)",
+                        input: "hsl(214.3 31.8% 91.4%)",
+                        ring: "hsl(222.2 84% 61.8%)",
+                        background: "hsl(0 0% 100%)",
+                        foreground: "hsl(222.2 84% 4.9%)",
+                        primary: {
+                            DEFAULT: "hsl(222.2 47.4% 11.2%)",
+                            foreground: "hsl(210 40% 98%)",
+                        },
+                        secondary: {
+                            DEFAULT: "hsl(210 40% 96.1%)",
+                            foreground: "hsl(222.2 47.4% 11.2%)",
+                        },
+                        destructive: {
+                            DEFAULT: "hsl(0 84.2% 60.2%)",
+                            foreground: "hsl(210 40% 98%)",
+                        },
+                        muted: {
+                            DEFAULT: "hsl(210 40% 96.1%)",
+                            foreground: "hsl(215.4 16.3% 46.9%)",
+                        },
+                        accent: {
+                            DEFAULT: "hsl(210 40% 96.1%)",
+                            foreground: "hsl(222.2 47.4% 11.2%)",
+                        },
+                        card: {
+                            DEFAULT: "hsl(0 0% 100%)",
+                            foreground: "hsl(222.2 84% 4.9%)",
+                        },
+                    },
+                    borderRadius: {
+                        lg: "0.5rem",
+                        md: "0.375rem",
+                        sm: "0.25rem",
+                    },
+                    fontFamily: {
+                        sans: ["-apple-system", "BlinkMacSystemFont", "Segoe UI", "PingFang SC", "Noto Sans CJK SC", "sans-serif"],
+                        serif: ["Noto Serif SC", "serif"],
+                    },
+                },
+            },
+        }
+    </script>
+    
+    <!-- Custom Styles -->
+    <style>
+        /* shadcn/ui style components */
+        .btn {
+            @apply inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+        }
+        
+        .btn-primary {
+            @apply bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2;
+        }
+        
+        .btn-secondary {
+            @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2;
+        }
+        
+        .btn-outline {
+            @apply border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2;
+        }
+        
+        .btn-ghost {
+            @apply hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2;
+        }
+        
+        .card {
+            @apply rounded-lg border bg-card text-card-foreground shadow-sm;
+        }
+        
+        .input {
+            @apply flex h-12 w-full rounded-md border border-input bg-background px-4 py-3 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all;
+        }
+        
+        .textarea {
+            @apply flex min-h-[120px] w-full rounded-lg border-2 border-gray-300 bg-gradient-to-br from-white to-gray-50 px-4 py-3 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 focus-visible:border-purple-400 focus-visible:bg-white disabled:cursor-not-allowed disabled:opacity-50 transition-all;
+        }
+        
+        .textarea-enhanced {
+            position: relative;
+            background: linear-gradient(white, white) padding-box,
+                       linear-gradient(135deg, #667eea 0%, #764ba2 100%) border-box;
+            border: 2px solid transparent;
+        }
+        
+        .textarea-enhanced:focus {
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1), 0 0 20px rgba(139, 92, 246, 0.2);
+        }
+        
+        .label {
+            @apply text-base font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-gray-700;
+        }
+        
+        .select {
+            @apply flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+        }
+        
+        /* Animations */
+        @keyframes slideIn {
+            from {
+                transform: translateY(10px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+        
+        @keyframes glow {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(139, 92, 246, 0.5), 0 0 40px rgba(139, 92, 246, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 30px rgba(139, 92, 246, 0.7), 0 0 60px rgba(139, 92, 246, 0.4);
+            }
+        }
+        
+        .btn-glow {
+            animation: glow 2s ease-in-out infinite;
+        }
+        
+        .animate-slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        /* Matrix visualization styles */
+        .matrix-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .project-marker {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            animation: dropIn 0.6s ease-out forwards;
+            opacity: 0;
+        }
+        
+        @keyframes dropIn {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -150%) scale(0.5);
+            }
+            50% {
+                opacity: 1;
+                transform: translate(-50%, -45%) scale(1.1);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+        
+        .marker-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .marker-dot:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        .marker-label {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-top: 8px;
+            padding: 4px 8px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            font-size: 12px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+        
+        /* Loading spinner */
+        .spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Header enhancement */
+        header {
+            transition: all 0.3s ease;
+        }
+        
+        header:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        /* Mobile menu (hidden by default) */
+        @media (max-width: 768px) {
+            .mobile-menu-button {
+                display: block;
+            }
+            .desktop-nav {
+                display: none;
+            }
+        }
+        
+        @media (min-width: 769px) {
+            .mobile-menu-button {
+                display: none;
+            }
+            .desktop-nav {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body class="bg-background text-foreground min-h-screen">
+    <div x-data="evaluationApp()" x-init="init()">
+        <!-- Header -->
+        <header class="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50 backdrop-blur-lg bg-opacity-95">
+            <div class="container mx-auto px-6">
+                <div class="flex items-center justify-between h-20">
+                    <!-- Logo and Brand -->
+                    <div class="flex items-center space-x-8">
+                        <div class="flex items-center space-x-3">
+                            <!-- Logo Icon -->
+                            <div class="w-10 h-10 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center shadow-lg">
+                                <span class="text-white font-bold text-xl font-serif">知</span>
+                            </div>
+                            <!-- Brand Name -->
+                            <div>
+                                <h1 class="text-3xl font-bold font-serif bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                                    知几
+                                </h1>
+                                <p class="text-xs text-gray-500 -mt-1">洞察先机 · 预见成败</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button class="mobile-menu-button p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                        <i data-lucide="menu" class="w-6 h-6 text-gray-700"></i>
+                    </button>
+                    
+                    <!-- Desktop Navigation -->
+                    <nav class="desktop-nav flex items-center space-x-2">
+                        <button class="px-5 py-2.5 text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all duration-200 font-medium flex items-center">
+                            <i data-lucide="sparkles" class="w-4 h-4 mr-2"></i>
+                            案例库
+                        </button>
+                        <button class="px-5 py-2.5 text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all duration-200 font-medium flex items-center">
+                            <i data-lucide="book-open" class="w-4 h-4 mr-2"></i>
+                            使用指南
+                        </button>
+                        <button class="px-5 py-2.5 text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all duration-200 font-medium flex items-center">
+                            <i data-lucide="message-circle" class="w-4 h-4 mr-2"></i>
+                            帮助
+                        </button>
+                        
+                        <!-- Divider -->
+                        <div class="w-px h-8 bg-gray-200 mx-2"></div>
+                        
+                        <!-- Auth Buttons -->
+                        <button class="px-5 py-2.5 text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all duration-200 font-medium">
+                            登录
+                        </button>
+                        <button class="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-medium rounded-lg hover:shadow-lg hover:shadow-purple-500/25 transform hover:scale-105 transition-all duration-200">
+                            免费试用
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="container mx-auto px-4 py-8">
+            <div class="grid lg:grid-cols-3 gap-8">
+                <!-- Left Column: Input Form -->
+                <div class="lg:col-span-1 space-y-6">
+                    <!-- Input Card -->
+                    <div class="card p-8 shadow-lg hover:shadow-xl transition-shadow border-2">
+                        <h2 class="text-2xl font-bold mb-6 flex items-center text-gray-800">
+                            <i data-lucide="clipboard-list" class="w-6 h-6 mr-3 text-purple-600"></i>
+                            项目信息
+                        </h2>
+                        
+                        <div class="space-y-6">
+                            <!-- Project Name -->
+                            <div>
+                                <label class="label mb-2 block">项目名称</label>
+                                <input 
+                                    type="text" 
+                                    x-model="projectData.name"
+                                    class="input"
+                                    placeholder="例如：智能客服系统"
+                                >
+                            </div>
+                            
+                            <!-- Project Description -->
+                            <div>
+                                <label class="label mb-2 block">项目描述</label>
+                                <div class="relative">
+                                    <textarea 
+                                        x-model="projectData.description"
+                                        class="textarea textarea-enhanced"
+                                        rows="5"
+                                        maxlength="500"
+                                        placeholder="详细描述您的 AI Agent 项目想法，包括：&#10;• 想要解决什么问题&#10;• 主要功能是什么&#10;• 预期效果如何"
+                                    ></textarea>
+                                    <div class="absolute bottom-2 right-3 text-xs text-gray-400">
+                                        <span x-text="projectData.description.length"></span>/500
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Target Users -->
+                            <div>
+                                <label class="label mb-2 block">目标用户</label>
+                                <input 
+                                    type="text" 
+                                    x-model="projectData.targetUsers"
+                                    class="input"
+                                    placeholder="例如：企业客服团队"
+                                >
+                            </div>
+                            
+                            <!-- Model Selection -->
+                            <div x-data="{ modelExpanded: false }">
+                                <label class="label mb-3 block">选择评估模型</label>
+                                
+                                <!-- Current Selected Model Display -->
+                                <div @click="modelExpanded = !modelExpanded" 
+                                     class="p-4 rounded-lg border-2 border-purple-300 bg-gradient-to-r from-purple-50 to-blue-50 cursor-pointer hover:shadow-lg transition-all">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <div class="font-semibold text-gray-800" x-text="getModelName(selectedModel)"></div>
+                                            <div class="text-sm text-gray-600 mt-1" x-html="getModelFeatures(selectedModel)"></div>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <div class="text-right">
+                                                <template x-if="selectedModel === 'gpt-5'">
+                                                    <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full font-semibold">推荐</span>
+                                                </template>
+                                                <template x-if="selectedModel === 'deepseek-3.1'">
+                                                    <span class="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-semibold">性价比</span>
+                                                </template>
+                                                <div class="text-sm font-semibold text-gray-700 mt-1" x-text="getModelPrice(selectedModel)"></div>
+                                            </div>
+                                            <i data-lucide="chevron-down" class="w-5 h-5 text-gray-500 transition-transform duration-200" 
+                                               :class="modelExpanded ? 'rotate-180' : ''"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Expandable Model Options -->
+                                <div x-show="modelExpanded" 
+                                     x-transition:enter="transition ease-out duration-200"
+                                     x-transition:enter-start="opacity-0 transform -translate-y-2"
+                                     x-transition:enter-end="opacity-100 transform translate-y-0"
+                                     x-transition:leave="transition ease-in duration-150"
+                                     x-transition:leave-start="opacity-100 transform translate-y-0"
+                                     x-transition:leave-end="opacity-0 transform -translate-y-2"
+                                     class="mt-3 space-y-3">
+                                    
+                                    <!-- GPT-5 -->
+                                    <label class="block cursor-pointer">
+                                        <input type="radio" x-model="selectedModel" value="gpt-5" @change="modelExpanded = false" class="sr-only peer">
+                                        <div class="p-4 rounded-lg border-2 border-gray-200 peer-checked:border-purple-600 peer-checked:bg-purple-50 transition-all hover:shadow-md">
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <div class="font-semibold text-gray-800">GPT-5</div>
+                                                    <div class="text-sm text-gray-600 mt-1">⚡ 速度快 · ⭐ 质量优秀</div>
+                                                </div>
+                                                <div class="text-right">
+                                                    <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full font-semibold">推荐</span>
+                                                    <div class="text-sm font-semibold text-gray-700 mt-1">💰 $0.048/次</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                    
+                                    <!-- Claude 4.1 Opus -->
+                                    <label class="block cursor-pointer">
+                                        <input type="radio" x-model="selectedModel" value="claude-4.1-opus" @change="modelExpanded = false" class="sr-only peer">
+                                        <div class="p-4 rounded-lg border-2 border-gray-200 peer-checked:border-purple-600 peer-checked:bg-purple-50 transition-all hover:shadow-md">
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <div class="font-semibold text-gray-800">Claude 4.1 Opus</div>
+                                                    <div class="text-sm text-gray-600 mt-1">🧠 深度推理 · 📝 长文本</div>
+                                                </div>
+                                                <div class="text-right">
+                                                    <div class="text-sm font-semibold text-gray-700">💰 $0.09/次</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                    
+                                    <!-- Claude Sonnet 4 -->
+                                    <label class="block cursor-pointer">
+                                        <input type="radio" x-model="selectedModel" value="claude-sonnet-4" @change="modelExpanded = false" class="sr-only peer">
+                                        <div class="p-4 rounded-lg border-2 border-gray-200 peer-checked:border-purple-600 peer-checked:bg-purple-50 transition-all hover:shadow-md">
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <div class="font-semibold text-gray-800">Claude Sonnet 4</div>
+                                                    <div class="text-sm text-gray-600 mt-1">⚖️ 均衡性能 · ⚡ 快速响应</div>
+                                                </div>
+                                                <div class="text-right">
+                                                    <div class="text-sm font-semibold text-gray-700">💰 $0.018/次</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                    
+                                    <!-- DeepSeek 3.1 -->
+                                    <label class="block cursor-pointer">
+                                        <input type="radio" x-model="selectedModel" value="deepseek-3.1" @change="modelExpanded = false" class="sr-only peer">
+                                        <div class="p-4 rounded-lg border-2 border-gray-200 peer-checked:border-purple-600 peer-checked:bg-purple-50 transition-all hover:shadow-md">
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <div class="font-semibold text-gray-800">DeepSeek 3.1</div>
+                                                    <div class="text-sm text-gray-600 mt-1">💎 极致性价比 · 💻 代码生成</div>
+                                                </div>
+                                                <div class="text-right">
+                                                    <span class="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-semibold">性价比</span>
+                                                    <div class="text-sm font-semibold text-gray-700 mt-1">💰 $0.002/次</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                    
+                                    <!-- Qwen3 -->
+                                    <label class="block cursor-pointer">
+                                        <input type="radio" x-model="selectedModel" value="qwen3" @change="modelExpanded = false" class="sr-only peer">
+                                        <div class="p-4 rounded-lg border-2 border-gray-200 peer-checked:border-purple-600 peer-checked:bg-purple-50 transition-all hover:shadow-md">
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <div class="font-semibold text-gray-800">Qwen3</div>
+                                                    <div class="text-sm text-gray-600 mt-1">🇨🇳 中文优化 · 🎨 多模态</div>
+                                                </div>
+                                                <div class="text-right">
+                                                    <div class="text-sm font-semibold text-gray-700">💰 $0.003/次</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <!-- Submit Button -->
+                            <div class="pt-4">
+                                <button 
+                                    @click="evaluateProject()"
+                                    :disabled="isEvaluating"
+                                    class="w-full h-14 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold text-lg rounded-lg hover:from-purple-700 hover:to-blue-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed btn-glow"
+                                >
+                                    <template x-if="!isEvaluating">
+                                        <span class="flex items-center justify-center">
+                                            <i data-lucide="zap" class="w-5 h-5 mr-3"></i>
+                                            开始智能评估
+                                        </span>
+                                    </template>
+                                    <template x-if="isEvaluating">
+                                        <span class="flex items-center justify-center">
+                                            <div class="spinner mr-3"></div>
+                                            评估中...
+                                        </span>
+                                    </template>
+                                </button>
+                                <div class="mt-3 text-center text-sm text-gray-500">
+                                    <i data-lucide="shield-check" class="w-4 h-4 inline mr-1"></i>
+                                    您的数据安全加密，仅用于评估分析
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Live Stream Card -->
+                    <div class="card p-6 bg-gradient-to-br from-gray-50 to-white">
+                        <h3 class="text-base font-bold text-gray-800 mb-4 flex items-center">
+                            <span class="relative flex h-4 w-4 mr-3">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-4 w-4 bg-green-500"></span>
+                            </span>
+                            实时评估动态
+                        </h3>
+                        
+                        <div class="space-y-2 text-sm">
+                            <template x-for="activity in liveActivities" :key="activity.id">
+                                <div class="animate-slide-in">
+                                    <template x-if="activity.type === 'evaluating'">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-gray-600">@<span x-text="activity.user"></span></span>
+                                            <span class="text-gray-400">正在评估</span>
+                                            <span class="font-medium">"<span x-text="activity.project"></span>"</span>
+                                            <div class="flex gap-1">
+                                                <span class="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0ms"></span>
+                                                <span class="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 150ms"></span>
+                                                <span class="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 300ms"></span>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <template x-if="activity.type === 'completed'">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-gray-600">@<span x-text="activity.user"></span></span>
+                                            <span class="text-gray-400">完成了</span>
+                                            <span class="font-medium">"<span x-text="activity.project"></span>"</span>
+                                            <span class="font-bold" :class="getScoreColor(activity.score)">
+                                                (<span x-text="activity.score"></span>分)
+                                            </span>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Column: Results -->
+                <div class="lg:col-span-2">
+                    <!-- Initial State: Example Cases -->
+                    <div x-show="!evaluationResult" class="space-y-6">
+                        <div class="text-center py-12">
+                            <i data-lucide="sparkles" class="w-16 h-16 mx-auto text-gray-300 mb-4"></i>
+                            <h2 class="text-xl font-semibold mb-2">开始评估您的 AI Agent 项目</h2>
+                            <p class="text-muted-foreground">在左侧输入项目信息，获得专业的可行性分析</p>
+                        </div>
+                        
+                        <!-- Example Cases -->
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <template x-for="example in exampleCases" :key="example.name">
+                                <div 
+                                    @click="loadExample(example)"
+                                    class="card p-4 cursor-pointer hover:shadow-md transition-shadow"
+                                >
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h3 class="font-semibold" x-text="example.name"></h3>
+                                        <span 
+                                            class="text-2xl font-bold"
+                                            :class="getScoreColor(example.score)"
+                                            x-text="example.score"
+                                        ></span>
+                                    </div>
+                                    <p class="text-sm text-muted-foreground mb-2" x-text="example.description"></p>
+                                    <div class="flex items-center justify-between">
+                                        <span 
+                                            class="text-xs px-2 py-1 rounded-full"
+                                            :class="getZoneStyle(example.zone)"
+                                            x-text="getZoneLabel(example.zone)"
+                                        ></span>
+                                        <button class="text-xs text-blue-600 hover:underline">
+                                            查看详情 →
+                                        </button>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                    
+                    <!-- Evaluation Results -->
+                    <div x-show="evaluationResult" class="card p-6" style="display: none;">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-lg font-semibold">评估结果</h2>
+                            <div class="flex gap-2">
+                                <button class="btn btn-outline btn-sm">
+                                    <i data-lucide="share-2" class="w-4 h-4 mr-1"></i>
+                                    分享
+                                </button>
+                                <button class="btn btn-outline btn-sm">
+                                    <i data-lucide="download" class="w-4 h-4 mr-1"></i>
+                                    下载报告
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Score Display -->
+                        <div class="text-center mb-8">
+                            <div class="text-6xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                                <span x-text="evaluationResult?.totalScore || '--'"></span>
+                            </div>
+                            <div class="text-gray-500 mt-2">综合评分 / 100</div>
+                            <div 
+                                class="mt-4 px-4 py-2 rounded-full inline-block"
+                                :class="evaluationResult?.totalScore >= 85 ? 'bg-green-100 text-green-800' : 
+                                        evaluationResult?.totalScore >= 70 ? 'bg-yellow-100 text-yellow-800' : 
+                                        'bg-red-100 text-red-800'"
+                            >
+                                <span x-text="evaluationResult?.totalScore >= 85 ? '✅ 强烈建议开发' :
+                                                evaluationResult?.totalScore >= 70 ? '⚠️ 谨慎评估' :
+                                                '❌ 不建议开发'"></span>
+                            </div>
+                        </div>
+                        
+                        <!-- Matrix Visualization -->
+                        <div class="mb-8">
+                            <h3 class="font-semibold mb-4">能力矩阵定位</h3>
+                            <div class="matrix-container">
+                                <img src="./images/capability-matrix.svg" alt="能力矩阵" class="w-full">
+                                <div x-show="evaluationResult" class="absolute inset-0 pointer-events-none">
+                                    <div 
+                                        class="project-marker"
+                                        :style="`left: ${evaluationResult?.position?.x || 50}%; top: ${evaluationResult?.position?.y || 50}%;`"
+                                    >
+                                        <div class="marker-dot"></div>
+                                        <div class="marker-label">您的项目</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Detailed Scores -->
+                        <div class="mb-8">
+                            <h3 class="font-semibold mb-4">详细评分</h3>
+                            <div class="space-y-3">
+                                <template x-for="[key, value] in Object.entries(evaluationResult?.dimensions || {})" :key="key">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600" x-text="getDimensionLabel(key)"></span>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-32 bg-gray-200 rounded-full h-2">
+                                                <div 
+                                                    class="bg-gradient-to-r from-purple-600 to-blue-600 h-2 rounded-full transition-all duration-500"
+                                                    :style="`width: ${value}%`"
+                                                ></div>
+                                            </div>
+                                            <span class="text-sm font-medium w-12 text-right" x-text="value"></span>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                        
+                        <!-- Suggestions and Risks -->
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h3 class="font-semibold mb-3 flex items-center">
+                                    <i data-lucide="lightbulb" class="w-4 h-4 mr-2 text-yellow-500"></i>
+                                    关键建议
+                                </h3>
+                                <ul class="space-y-2 text-sm text-gray-600">
+                                    <template x-for="suggestion in evaluationResult?.suggestions || []" :key="suggestion">
+                                        <li class="flex items-start">
+                                            <span class="mr-2">•</span>
+                                            <span x-text="suggestion"></span>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold mb-3 flex items-center">
+                                    <i data-lucide="alert-triangle" class="w-4 h-4 mr-2 text-orange-500"></i>
+                                    潜在风险
+                                </h3>
+                                <ul class="space-y-2 text-sm text-gray-600">
+                                    <template x-for="risk in evaluationResult?.risks || []" :key="risk">
+                                        <li class="flex items-start">
+                                            <span class="mr-2">•</span>
+                                            <span x-text="risk"></span>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="mt-8 flex gap-4 justify-center">
+                            <button @click="resetForm()" class="btn btn-outline">
+                                <i data-lucide="refresh-cw" class="w-4 h-4 mr-2"></i>
+                                重新评估
+                            </button>
+                            <button class="btn btn-primary">
+                                <i data-lucide="rocket" class="w-4 h-4 mr-2"></i>
+                                开始开发
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Footer -->
+        <footer class="border-t mt-16">
+            <div class="container mx-auto px-4 py-8">
+                <div class="text-center text-sm text-muted-foreground">
+                    <p class="mb-2">知几 - 洞察先机，预见成败</p>
+                    <p>© 2025 ZhiJi. 基于深厚文化底蕴和先进技术的 AI Agent 可行性评估平台</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Alpine.js App -->
+    <script>
+        function evaluationApp() {
+            return {
+                projectData: {
+                    name: '',
+                    description: '',
+                    targetUsers: ''
+                },
+                selectedModel: 'gpt-5',
+                isEvaluating: false,
+                evaluationResult: null,
+                liveActivities: [],
+                exampleCases: [
+                    {
+                        name: '客服对话系统',
+                        score: 92,
+                        zone: 'optimal',
+                        description: '基于大模型的智能客服，处理常见问题咨询'
+                    },
+                    {
+                        name: '代码审查助手',
+                        score: 88,
+                        zone: 'optimal',
+                        description: '自动审查代码质量，提供改进建议'
+                    },
+                    {
+                        name: '周报生成器',
+                        score: 95,
+                        zone: 'optimal',
+                        description: '根据工作记录自动生成周报'
+                    },
+                    {
+                        name: '创意设计工具',
+                        score: 65,
+                        zone: 'challenge',
+                        description: 'AI辅助创意设计和构思'
+                    }
+                ],
+                
+                init() {
+                    // Initialize Lucide icons
+                    lucide.createIcons();
+                    
+                    // Start live activity simulation
+                    this.startLiveStream();
+                },
+                
+                evaluateProject() {
+                    if (!this.projectData.name || !this.projectData.description) {
+                        alert('请填写项目名称和描述');
+                        return;
+                    }
+                    
+                    this.isEvaluating = true;
+                    
+                    // Simulate API call
+                    setTimeout(() => {
+                        this.evaluationResult = {
+                            totalScore: Math.floor(Math.random() * 30) + 70,
+                            dimensions: {
+                                clarity: Math.floor(Math.random() * 20) + 80,
+                                capability: Math.floor(Math.random() * 20) + 80,
+                                objectivity: Math.floor(Math.random() * 30) + 70,
+                                data: Math.floor(Math.random() * 20) + 80,
+                                tolerance: Math.floor(Math.random() * 20) + 80
+                            },
+                            position: {
+                                x: Math.floor(Math.random() * 40) + 30,
+                                y: Math.floor(Math.random() * 40) + 30
+                            },
+                            suggestions: [
+                                '建议先从小规模试点开始，逐步扩展功能',
+                                '需要准备充足的训练数据和测试样例',
+                                '考虑引入人工审核机制确保质量'
+                            ],
+                            risks: [
+                                '模型可能产生不准确的内容',
+                                '需要持续的维护和优化',
+                                '用户接受度需要时间培养'
+                            ]
+                        };
+                        
+                        this.isEvaluating = false;
+                        
+                        // Update icons after DOM update
+                        this.$nextTick(() => {
+                            lucide.createIcons();
+                        });
+                        
+                        // Add to live stream
+                        this.addActivity('completed', '当前用户', this.projectData.name, this.evaluationResult.totalScore);
+                    }, 2000);
+                },
+                
+                resetForm() {
+                    this.projectData = {
+                        name: '',
+                        description: '',
+                        targetUsers: ''
+                    };
+                    this.evaluationResult = null;
+                },
+                
+                loadExample(example) {
+                    this.projectData.name = example.name;
+                    this.projectData.description = example.description;
+                    this.projectData.targetUsers = '企业用户';
+                },
+                
+                startLiveStream() {
+                    // Simulate live activities
+                    const users = ['张三', '李四', '王五', '赵六', '钱七'];
+                    const projects = ['智能写作助手', '数据分析平台', '自动化测试工具', '内容审核系统', '智能推荐引擎'];
+                    
+                    setInterval(() => {
+                        const user = users[Math.floor(Math.random() * users.length)];
+                        const project = projects[Math.floor(Math.random() * projects.length)];
+                        const type = Math.random() > 0.3 ? 'evaluating' : 'completed';
+                        const score = type === 'completed' ? Math.floor(Math.random() * 30) + 70 : null;
+                        
+                        this.addActivity(type, user, project, score);
+                    }, 5000);
+                    
+                    // Add initial activities
+                    this.addActivity('completed', '张三', '智能客服系统', 92);
+                    this.addActivity('evaluating', '李四', '代码生成器');
+                },
+                
+                addActivity(type, user, project, score = null) {
+                    const activity = {
+                        id: Date.now(),
+                        type,
+                        user,
+                        project,
+                        score
+                    };
+                    
+                    this.liveActivities.unshift(activity);
+                    
+                    // Keep only last 5 activities
+                    if (this.liveActivities.length > 5) {
+                        this.liveActivities.pop();
+                    }
+                },
+                
+                getDimensionLabel(key) {
+                    const labels = {
+                        clarity: '任务清晰度',
+                        capability: '能力匹配度',
+                        objectivity: '评估客观性',
+                        data: '数据充足性',
+                        tolerance: '容错成本'
+                    };
+                    return labels[key] || key;
+                },
+                
+                getScoreColor(score) {
+                    if (score >= 85) return 'text-green-600';
+                    if (score >= 70) return 'text-yellow-600';
+                    return 'text-red-600';
+                },
+                
+                getZoneLabel(zone) {
+                    const labels = {
+                        optimal: '最大公约数',
+                        easy: '容易实现',
+                        challenge: '挑战区域',
+                        infeasible: '不可行',
+                        'over-investment': '过度投入'
+                    };
+                    return labels[zone] || zone;
+                },
+                
+                getZoneStyle(zone) {
+                    const styles = {
+                        optimal: 'bg-green-100 text-green-800',
+                        easy: 'bg-blue-100 text-blue-800',
+                        challenge: 'bg-yellow-100 text-yellow-800',
+                        infeasible: 'bg-red-100 text-red-800',
+                        'over-investment': 'bg-gray-100 text-gray-800'
+                    };
+                    return styles[zone] || 'bg-gray-100 text-gray-800';
+                },
+                
+                getModelName(modelId) {
+                    const models = {
+                        'gpt-5': 'GPT-5',
+                        'claude-4.1-opus': 'Claude 4.1 Opus',
+                        'claude-sonnet-4': 'Claude Sonnet 4',
+                        'deepseek-3.1': 'DeepSeek 3.1',
+                        'qwen3': 'Qwen3'
+                    };
+                    return models[modelId] || 'GPT-5';
+                },
+                
+                getModelFeatures(modelId) {
+                    const features = {
+                        'gpt-5': '⚡ 速度快 · ⭐ 质量优秀',
+                        'claude-4.1-opus': '🧠 深度推理 · 📝 长文本',
+                        'claude-sonnet-4': '⚖️ 均衡性能 · ⚡ 快速响应',
+                        'deepseek-3.1': '💎 极致性价比 · 💻 代码生成',
+                        'qwen3': '🇨🇳 中文优化 · 🎨 多模态'
+                    };
+                    return features[modelId] || '⚡ 速度快 · ⭐ 质量优秀';
+                },
+                
+                getModelPrice(modelId) {
+                    const prices = {
+                        'gpt-5': '💰 $0.048/次',
+                        'claude-4.1-opus': '💰 $0.09/次',
+                        'claude-sonnet-4': '💰 $0.018/次',
+                        'deepseek-3.1': '💰 $0.002/次',
+                        'qwen3': '💰 $0.003/次'
+                    };
+                    return prices[modelId] || '💰 $0.048/次';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
