@@ -1,0 +1,32 @@
+name = "zhiji-api"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+# 本地开发配置
+[dev]
+port = 8787
+local_protocol = "http"
+
+# 环境变量
+[vars]
+ENVIRONMENT = "development"
+
+# 生产环境配置
+[env.production]
+vars = { ENVIRONMENT = "production" }
+
+# D1 数据库绑定
+[[d1_databases]]
+binding = "DB"
+database_name = "zhiji-db"
+database_id = "local-zhiji-db"  # 本地开发用ID
+
+# KV 命名空间绑定（稍后配置）
+# [[kv_namespaces]]
+# binding = "CACHE"
+# id = "xxx"
+
+# R2 存储桶绑定（稍后配置）
+# [[r2_buckets]]
+# binding = "STORAGE"
+# bucket_name = "zhiji-reports"

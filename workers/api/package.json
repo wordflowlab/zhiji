@@ -1,0 +1,25 @@
+{
+  "name": "zhiji-api",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev src/index.ts",
+    "deploy": "wrangler deploy",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@hono/zod-validator": "^0.7.2",
+    "hono": "^4.9.4",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250823.0",
+    "typescript": "^5.9.2",
+    "wrangler": "^4.32.0"
+  }
+}
