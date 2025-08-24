@@ -11,15 +11,20 @@ local_protocol = "http"
 [vars]
 ENVIRONMENT = "development"
 
-# 生产环境配置
-[env.production]
-vars = { ENVIRONMENT = "production" }
-
 # D1 数据库绑定
 [[d1_databases]]
 binding = "DB"
 database_name = "zhiji-db"
-database_id = "local-zhiji-db"  # 本地开发用ID
+database_id = "2b1805e3-a7dc-49b4-9592-765b04965dd6"
+
+# 生产环境配置
+[env.production]
+vars = { ENVIRONMENT = "production" }
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "zhiji-db"
+database_id = "2b1805e3-a7dc-49b4-9592-765b04965dd6"
 
 # KV 命名空间绑定（稍后配置）
 # [[kv_namespaces]]
