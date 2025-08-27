@@ -97,7 +97,7 @@ show_menu() {
 start_backend() {
     echo -e "${YELLOW}🔧 启动后端 API...${NC}"
     cd workers/api
-    npm run dev &
+    npx wrangler dev src/index.ts --local --persist-to=.wrangler/state &
     BACKEND_PID=$!
     cd ../..
     sleep 3

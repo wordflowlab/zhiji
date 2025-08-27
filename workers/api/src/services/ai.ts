@@ -81,38 +81,51 @@ export class AIEvaluationService {
   }
 
   private async callDeepSeekAPI(prompt: string): Promise<any> {
-    // 这里暂时返回模拟数据，实际部署时需要真实API调用
-    console.log('DeepSeek API 调用（模拟）:', prompt.substring(0, 100) + '...');
-    
-    // 实际调用代码（需要API Key）：
-    /*
-    const response = await fetch(`${this.baseUrl}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.apiKey}`
-      },
-      body: JSON.stringify({
-        model: 'deepseek-chat',
-        messages: [
-          { role: 'system', content: '你是一个专业的AI项目可行性评估专家。' },
-          { role: 'user', content: prompt }
-        ],
-        temperature: 0.7,
-        response_format: { type: 'json_object' }
-      })
-    });
+    try {
+      // 如果没有真实的API密钥，使用模拟数据
+      if (!this.apiKey || this.apiKey === 'mock-api-key') {
+        console.log('使用模拟数据（未配置API密钥）');
+        return null;
+      }
 
-    if (!response.ok) {
-      throw new Error(`API调用失败: ${response.status}`);
+      console.log('调用DeepSeek API...');
+      
+      const response = await fetch(`${this.baseUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.apiKey}`
+        },
+        body: JSON.stringify({
+          model: 'deepseek-chat',
+          messages: [
+            { role: 'system', content: '你是一个专业的AI项目可行性评估专家。请以JSON格式返回评估结果。' },
+            { role: 'user', content: prompt }
+          ],
+          temperature: 0.7,
+          max_tokens: 2000
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`API调用失败: ${response.status} - ${error}`);
+      }
+
+      const data = await response.json();
+      const content = data.choices[0].message.content;
+      
+      // 尝试解析JSON响应
+      try {
+        return JSON.parse(content);
+      } catch (e) {
+        console.error('JSON解析失败，返回原始内容');
+        return null;
+      }
+    } catch (error) {
+      console.error('DeepSeek API调用错误:', error);
+      return null;
     }
-
-    const data = await response.json();
-    return JSON.parse(data.choices[0].message.content);
-    */
-
-    // 返回模拟响应
-    return null;
   }
 
   private parseResponse(response: any): EvaluationMetrics {

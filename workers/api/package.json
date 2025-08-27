@@ -4,9 +4,10 @@
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
-    "dev": "wrangler dev src/index.ts",
-    "deploy": "wrangler deploy",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "wrangler dev src/index.ts --local --persist-to=.wrangler/state",
+    "deploy": "wrangler deploy src/index.ts --env production",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "db:init": "wrangler d1 execute zhiji-db --local --file=schema.sql"
   },
   "keywords": [],
   "author": "",

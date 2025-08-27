@@ -13,7 +13,13 @@ const app = new Hono<{ Bindings: Bindings }>();
 
 // CORS 配置
 app.use('*', cors({
-  origin: ['http://localhost:3000', 'https://zhiji.ai'],
+  origin: [
+    'http://localhost:3000',
+    'https://zhiji.ai',
+    'https://zhiji.150404.xyz',
+    'https://*.zhiji.pages.dev',
+    /^https:\/\/[a-z0-9]+\.zhiji\.pages\.dev$/
+  ],
   credentials: true,
 }));
 
