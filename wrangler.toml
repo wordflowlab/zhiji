@@ -1,0 +1,10 @@
+name = "zhiji"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = ".vercel/output/static"
+
+# D1 数据库绑定
+[[d1_databases]]
+binding = "DB"
+database_name = "zhiji-db"
+database_id = "2b1805e3-a7dc-49b4-9592-765b04965dd6"
