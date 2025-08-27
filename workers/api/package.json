@@ -4,6 +4,7 @@
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
+    "vercel-build": "next build",
     "dev": "wrangler dev src/index.ts --local --persist-to=.wrangler/state",
     "deploy": "wrangler deploy src/index.ts --env production",
     "test": "echo \"Error: no test specified\" && exit 1",

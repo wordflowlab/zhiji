@@ -1,10 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-
-// 配置 Edge Runtime
-export const runtime = 'edge';
 import { useParams } from 'next/navigation';
+
+export const runtime = 'edge';
 import api, { type Evaluation } from '@/lib/api';
 import BrandLogo from '@/components/BrandLogo';
 import GlowButton from '@/components/ui/GlowButton';

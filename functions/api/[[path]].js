@@ -8,7 +8,7 @@ export async function onRequest(context) {
   
   // Workers API的实际地址（这是部署在Workers上的API服务）
   // 这个必须指向实际的Workers服务，不能指向自己的域名（会造成循环）
-  const targetUrl = `https://zhiji-pages-production.wutongci.workers.dev${apiPath}${url.search}`;
+  const targetUrl = `https://zhiji-api.wutongci.workers.dev${apiPath}${url.search}`;
   
   // 创建新的请求，保留原始请求的方法和头部
   const newRequest = new Request(targetUrl, {

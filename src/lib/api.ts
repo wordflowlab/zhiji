@@ -1,7 +1,10 @@
 // API 客户端库
 
 // API 基础配置
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8787/api';
+// 在生产环境中使用相对路径（通过 Pages Functions），开发环境使用本地地址
+const API_BASE_URL = typeof window !== 'undefined' && window.location.hostname !== 'localhost' 
+  ? '/api' 
+  : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8787/api');
 
 // 类型定义
 export interface EvaluationRequest {
